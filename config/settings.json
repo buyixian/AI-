@@ -12,7 +12,7 @@
         "api": "http://localhost:8000/v1"
     },
     "deepseek": {
-        "api_key": "sk-4c1c40fca8d1434fade4119ca661f9eb",
+        "api_key": "",
         "model": "deepseek-chat",
         "base_url": "https://api.deepseek.com/v1"
     },

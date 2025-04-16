@@ -1,0 +1,36 @@
+{
+    "files": {
+        "论文/ArXiv Paper 2006.00446.pdf_未知作者_6.pdf": {
+            "path": "knowledge_base\\论文\\ArXiv Paper 2006.00446.pdf_未知作者_6.pdf",
+            "category": "论文",
+            "added_time": "2025-04-13T23:59:10.609811",
+            "type": "pdf",
+            "size": 6240519,
+            "tokens": 1,
+            "summary": "无法提取PDF文本，请安装PyPDF2库",
+            "title": "ArXiv Paper 2006.00446.pdf",
+            "authors": "未知作者",
+            "source": "本地文件"
+        },
+        "论文/Test_Download_Success.pdf_未知作者.pdf": {
+            "path": "knowledge_base\\论文\\Test_Download_Success.pdf_未知作者.pdf",
+            "category": "论文",
+            "added_time": "2025-04-14T00:26:15.295073",
+            "type": "pdf",
+            "size": 1509689,
+            "tokens": 1,
+            "content": "无法提取PDF文本，请安装PyPDF2库",
+            "summary": "无法提取PDF文本，请安装PyPDF2库"
+        }
+    },
+    "categories": {
+        "论文": [
+            "论文/ArXiv Paper 2006.00446.pdf_未知作者_6.pdf",
+            "论文/Test_Download_Success.pdf_未知作者.pdf"
+        ],
+        "学习笔记": [],
+        "参考资料": [],
+        "其他": []
+    },
+    "last_updated": "2025-04-14T08:54:53.309743"
+}

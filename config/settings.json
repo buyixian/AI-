@@ -1,0 +1,20 @@
+{
+    "openai": {
+        "api_key": "",
+        "model": "gpt-4"
+    },
+    "azure": {
+        "api_key": "",
+        "endpoint": "https://api.deepseek.com/v1",
+        "deployment": "DeepSeek Chat"
+    },
+    "local": {
+        "api": "http://localhost:8000/v1"
+    },
+    "deepseek": {
+        "api_key": "sk-4c1c40fca8d1434fade4119ca661f9eb",
+        "model": "deepseek-chat",
+        "base_url": "https://api.deepseek.com/v1"
+    },
+    "other": {}
+}

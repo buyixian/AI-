@@ -21,8 +21,8 @@ pip install -r requirements.txt
 ```
 
 或使用提供的安装脚本：
-- Windows: 运行 `install_dependencies.bat`
-- Linux/Mac: 运行 `install_dependencies.sh`
+- Windows: 运行 `scripts/install_dependencies.bat`
+- Linux/Mac: 运行 `scripts/install_dependencies.sh`
 
 ### 启动方式
 
@@ -64,8 +64,10 @@ AI-/
 │   ├── knowledge_manager.py  # 知识库管理
 │   └── paper_downloader.py   # 论文下载器
 │ 
-├── scripts/                  # 其他辅助脚本
-│   └── test_download.bat     # 测试下载脚本
+├── scripts/                  # 辅助脚本
+│   ├── install_dependencies.bat
+│   ├── install_dependencies.sh
+│   └── 其他脚本文件
 │
 ├── tests/                    # 测试代码
 │   ├── debug_app_search.py
@@ -79,11 +81,6 @@ AI-/
 │
 ├── README.md                 # 项目说明
 ├── requirements.txt          # 依赖列表
-├── install_dependencies.bat  # Windows安装依赖脚本
-├── install_dependencies.sh   # Linux/Mac安装依赖脚本
-├── install_missing_libs.bat  # Windows安装缺失库脚本
-├── install_missing_libs.sh   # Linux/Mac安装缺失库脚本
-├── setup_permissions.bat     # 权限设置脚本
 ├── start_assistant.bat       # Windows启动脚本
 └── start_assistant.sh        # Linux/Mac启动脚本
 ```

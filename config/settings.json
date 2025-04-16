@@ -12,9 +12,15 @@
         "api": "http://localhost:8000/v1"
     },
     "deepseek": {
-        "api_key": "sk-834750f36f734df3881eb844bd603318",
+        "api_key": "",
         "model": "deepseek-chat",
-        "base_url": "https://api.deepseek.com/v1"
+        "base_url": ""
     },
-    "other": {}
+    "other": {},
+    "general": {
+        "max_context": 0,
+        "stream_output": false,
+        "temperature": 0.9032258064516129,
+        "max_tokens": 8192
+    }
 }

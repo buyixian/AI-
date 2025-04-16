@@ -162,6 +162,10 @@ class AIAssistant:
         self.chat_history.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         self.chat_history.config(state=tk.DISABLED)
         
+        # 配置标签样式
+        self.chat_history.tag_configure("user_tag", foreground="#0066CC", font=("Arial", 10, "bold"))
+        self.chat_history.tag_configure("ai_tag", foreground="#006600", font=("Arial", 10, "bold"))
+        
         # 输入区域
         input_frame = ttk.Frame(self.chat_tab)
         input_frame.pack(fill=tk.X, pady=5)
@@ -304,29 +308,21 @@ class AIAssistant:
     
     def setup_settings_tab(self):
         """设置API配置选项卡"""
-        # 初始化API管理器，如果尚未初始化
-        if not hasattr(self, 'api_manager'):
-            self.api_manager = APIManager()
-            
-        # 创建API类型选择下拉框
-        ttk.Label(self.settings_tab, text="选择API类型:").pack(anchor="w", padx=10, pady=5)
-        
-        settings_frame = ttk.Frame(self.settings_tab)
-        settings_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        # 创建一个带滚动条的Canvas，用于容纳所有设置
-        canvas = tk.Canvas(settings_frame)
-        scrollbar = ttk.Scrollbar(settings_frame, orient="vertical", command=canvas.yview)
+        # 创建滚动视图
+        canvas = tk.Canvas(self.settings_tab)
+        scrollbar = ttk.Scrollbar(self.settings_tab, orient="vertical", command=canvas.yview)
         scrollable_frame = ttk.Frame(canvas)
-        
+
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
         )
-        
+
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
-        
+
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
         
@@ -334,24 +330,23 @@ class AIAssistant:
         openai_frame = ttk.LabelFrame(scrollable_frame, text="OpenAI设置")
         openai_frame.pack(fill=tk.X, pady=5)
         
-        ttk.Label(openai_frame, text="API Key:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-        self.openai_key = ttk.Entry(openai_frame, width=50, show="*")
+        ttk.Label(openai_frame, text="API密钥:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.openai_key = ttk.Entry(openai_frame, width=50)
         self.openai_key.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
         
         ttk.Label(openai_frame, text="模型:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-        self.openai_model = ttk.Entry(openai_frame, width=30)
+        self.openai_model = ttk.Combobox(openai_frame, values=["gpt-4", "gpt-4o", "gpt-3.5-turbo"], width=20)
         self.openai_model.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-        self.openai_model.insert(0, "gpt-4")
         
         # Azure OpenAI设置
         azure_frame = ttk.LabelFrame(scrollable_frame, text="Azure OpenAI设置")
         azure_frame.pack(fill=tk.X, pady=5)
         
-        ttk.Label(azure_frame, text="API Key:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-        self.azure_key = ttk.Entry(azure_frame, width=50, show="*")
+        ttk.Label(azure_frame, text="API密钥:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.azure_key = ttk.Entry(azure_frame, width=50)
         self.azure_key.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
         
-        ttk.Label(azure_frame, text="Endpoint:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(azure_frame, text="终端点:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.azure_endpoint = ttk.Entry(azure_frame, width=50)
         self.azure_endpoint.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
         
@@ -363,21 +358,20 @@ class AIAssistant:
         deepseek_frame = ttk.LabelFrame(scrollable_frame, text="DeepSeek设置")
         deepseek_frame.pack(fill=tk.X, pady=5)
         
-        ttk.Label(deepseek_frame, text="API Key:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-        self.deepseek_key = ttk.Entry(deepseek_frame, width=50, show="*")
+        ttk.Label(deepseek_frame, text="API密钥:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.deepseek_key = ttk.Entry(deepseek_frame, width=50)
         self.deepseek_key.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
         
-        ttk.Label(deepseek_frame, text="模型:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-        self.deepseek_model = ttk.Entry(deepseek_frame, width=30)
-        self.deepseek_model.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-        self.deepseek_model.insert(0, "deepseek-chat")
-        
-        ttk.Label(deepseek_frame, text="API地址:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(deepseek_frame, text="API地址:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.deepseek_url = ttk.Entry(deepseek_frame, width=50)
-        self.deepseek_url.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
+        self.deepseek_url.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
         self.deepseek_url.insert(0, "https://api.deepseek.com/v1")
         
-        # 本地模型设置
+        ttk.Label(deepseek_frame, text="模型:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.deepseek_model = ttk.Combobox(deepseek_frame, values=["deepseek-chat", "deepseek-coder"], width=20)
+        self.deepseek_model.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
+        
+        # 本地API设置
         local_frame = ttk.LabelFrame(scrollable_frame, text="本地模型设置")
         local_frame.pack(fill=tk.X, pady=5)
         
@@ -385,6 +379,46 @@ class AIAssistant:
         self.local_api = ttk.Entry(local_frame, width=50)
         self.local_api.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
         self.local_api.insert(0, "http://localhost:8000/v1")
+        
+        # 通用API设置
+        general_frame = ttk.LabelFrame(scrollable_frame, text="通用参数设置")
+        general_frame.pack(fill=tk.X, pady=5)
+        
+        # 上下文窗口设置
+        ttk.Label(general_frame, text="上下文窗口大小:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.max_context = ttk.Spinbox(general_frame, from_=1, to=50, width=5)
+        self.max_context.grid(row=0, column=1, sticky=tk.W, padx=5, pady=5)
+        self.max_context.set(10)  # 默认值
+        ttk.Label(general_frame, text="轮对话 (0表示无限制)").grid(row=0, column=2, sticky=tk.W, padx=5, pady=5)
+        
+        # 流式输出设置
+        self.stream_output_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(general_frame, text="启用流式输出", variable=self.stream_output_var).grid(
+            row=1, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        
+        # 温度设置
+        ttk.Label(general_frame, text="温度:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        temp_frame = ttk.Frame(general_frame)
+        temp_frame.grid(row=2, column=1, columnspan=2, sticky=tk.W, padx=5, pady=5)
+
+        self.temperature_value = tk.StringVar(value="0.7")
+        self.temperature = ttk.Scale(temp_frame, from_=0.0, to=1.0, orient=tk.HORIZONTAL, length=200, 
+                                    command=lambda v: self.update_temperature_display(float(v)))
+        self.temperature.pack(side=tk.LEFT)
+        self.temperature.set(0.7)  # 默认值
+
+        # 添加温度数值显示
+        self.temp_display = ttk.Label(temp_frame, textvariable=self.temperature_value, width=5)
+        self.temp_display.pack(side=tk.LEFT, padx=5)
+
+        ttk.Label(general_frame, text="(0.0: 更精确, 1.0: 更创造性)").grid(row=3, column=1, columnspan=2, sticky=tk.W, padx=5, pady=0)
+        
+        # 最大生成Token设置
+        ttk.Label(general_frame, text="最大生成长度:").grid(row=4, column=0, sticky=tk.W, padx=5, pady=5)
+        self.max_tokens = ttk.Spinbox(general_frame, from_=100, to=16000, width=8, increment=100)
+        self.max_tokens.grid(row=4, column=1, sticky=tk.W, padx=5, pady=5)
+        self.max_tokens.set(2000)  # 默认值
+        ttk.Label(general_frame, text="Tokens").grid(row=4, column=2, sticky=tk.W, padx=5, pady=5)
         
         # 其他API设置
         other_frame = ttk.LabelFrame(scrollable_frame, text="其他API设置")
@@ -403,7 +437,11 @@ class AIAssistant:
         save_frame = ttk.Frame(scrollable_frame)
         save_frame.pack(pady=10)
         
-        ttk.Button(save_frame, text="保存设置", command=self.save_settings).pack(pady=5)
+        ttk.Button(save_frame, text="保存设置", command=self.save_settings).pack(pady=5, side=tk.LEFT, padx=10)
+        
+        # 添加测试对话按钮
+        test_button = ttk.Button(save_frame, text="测试当前参数", command=self.test_parameters)
+        test_button.pack(pady=5, side=tk.LEFT, padx=10)
     
     def setup_paper_tab(self):
         """设置文献下载选项卡"""
@@ -1526,22 +1564,96 @@ class AIAssistant:
         # 清空输入
         self.user_input.delete("1.0", tk.END)
         
-        # 更新对话历史
+        # 更新对话历史 - 使用更醒目的格式
         self.chat_history.config(state=tk.NORMAL)
-        self.chat_history.insert(tk.END, "用户: " + message + "\n\n")
+        self.chat_history.insert(tk.END, "【用户】\n", "user_tag")
+        self.chat_history.insert(tk.END, message + "\n\n")
         
         # 添加到历史数据
         self.chat_history_data.append({"user": message})
         
         # 调用AI API
-        self.chat_history.insert(tk.END, "AI助手: 正在思考...\n\n")
+        self.chat_history.insert(tk.END, "【AI助手】\n", "ai_tag")
+        self.chat_history.see(tk.END)
+        
+        # 配置标签样式
+        self.chat_history.tag_configure("user_tag", foreground="#0066CC", font=("Arial", 10, "bold"))
+        self.chat_history.tag_configure("ai_tag", foreground="#006600", font=("Arial", 10, "bold"))
+        
+        # 使用流式输出或非流式输出
+        use_stream = self.api_manager.settings.get("general", {}).get("stream_output", True)
+        
+        if use_stream:
+            # 在流式输出下，创建回调函数接收流式内容
+            self.chat_history.mark_set("response_start", tk.INSERT)
+            self.chat_history.mark_gravity("response_start", tk.LEFT)
+            
+            # 确保UI可以响应
+            self.chat_history.config(state=tk.DISABLED)
+            self.chat_history.update()
+            
+            # 启动线程处理API请求
+            Thread(target=self.process_api_request_stream, args=(message,)).start()
+        else:
+            # 非流式输出
+            self.chat_history.insert(tk.END, "正在思考...\n\n")
+            self.chat_history.see(tk.END)
+            self.chat_history.config(state=tk.DISABLED)
+            
+            # 启动线程处理API请求
+            Thread(target=self.process_api_request, args=(message,)).start()
+
+    def process_api_request_stream(self, message):
+        """使用流式输出处理API请求"""
+        # 获取选择的API类型
+        api_type = self.api_var.get()
+        
+        # 检查是否需要使用知识库增强
+        use_knowledge = hasattr(self, 'use_knowledge_var') and self.use_knowledge_var.get()
+        knowledge_context = ""
+        
+        if use_knowledge:
+            # 从知识库获取相关上下文
+            knowledge_context = self.knowledge_manager.get_knowledge_context(message)
+            if knowledge_context:
+                # 将知识库上下文加入到提示中
+                message = knowledge_context + "\n\n基于以上知识库信息，请回答: " + message
+        
+        # 准备流式输出的回调函数
+        response_text = ""
+        
+        def stream_callback(content):
+            nonlocal response_text
+            response_text += content
+            
+            # 更新UI（在主线程中）
+            self.root.after(0, lambda: self._update_chat_with_content(content))
+        
+        # 调用API（带流式回调）
+        response = self.api_manager.call_api(api_type, message, self.chat_history_data, stream_callback)
+        
+        # 添加到历史数据
+        self.chat_history_data.append({"assistant": response})
+        
+        # 确保UI完成更新
+        self.root.after(0, lambda: self._finish_chat_response())
+
+    def _update_chat_with_content(self, content):
+        """更新聊天历史中的流式内容"""
+        self.chat_history.config(state=tk.NORMAL)
+        self.chat_history.insert(tk.END, content)
         self.chat_history.see(tk.END)
         self.chat_history.config(state=tk.DISABLED)
-        
-        # 启动线程处理API请求
-        Thread(target=self.process_api_request, args=(message,)).start()
-    
+
+    def _finish_chat_response(self):
+        """完成聊天响应的处理"""
+        self.chat_history.config(state=tk.NORMAL)
+        self.chat_history.insert(tk.END, "\n\n")
+        self.chat_history.see(tk.END)
+        self.chat_history.config(state=tk.DISABLED)
+
     def process_api_request(self, message):
+        """非流式处理API请求"""
         # 获取选择的API类型
         api_type = self.api_var.get()
         
@@ -1567,7 +1679,7 @@ class AIAssistant:
         # 删除"正在思考..."
         self.chat_history.delete(float(self.chat_history.index(tk.END)) - 3.0, tk.END)
         # 添加回复
-        self.chat_history.insert(tk.END, "AI助手: " + response + "\n\n")
+        self.chat_history.insert(tk.END, response + "\n\n")
         self.chat_history.see(tk.END)
         self.chat_history.config(state=tk.DISABLED)
     
@@ -1802,6 +1914,12 @@ class AIAssistant:
             },
             "local": {
                 "api": self.local_api.get()
+            },
+            "general": {
+                "max_context": int(self.max_context.get()),
+                "stream_output": self.stream_output_var.get(),
+                "temperature": float(self.temperature.get()),
+                "max_tokens": int(self.max_tokens.get())
             }
         }
         
@@ -1812,43 +1930,60 @@ class AIAssistant:
         messagebox.showinfo("成功", "设置已保存")
     
     def load_settings(self):
-        try:
-            if os.path.exists("config/settings.json"):
-                with open("config/settings.json", "r") as f:
-                    settings = json.load(f)
-                
-                if "openai" in settings:
-                    self.openai_key.delete(0, tk.END)
-                    self.openai_key.insert(0, settings["openai"].get("api_key", ""))
-                    
-                    self.openai_model.delete(0, tk.END)
-                    self.openai_model.insert(0, settings["openai"].get("model", "gpt-4"))
-                
-                if "azure" in settings:
-                    self.azure_key.delete(0, tk.END)
-                    self.azure_key.insert(0, settings["azure"].get("api_key", ""))
-                    
-                    self.azure_endpoint.delete(0, tk.END)
-                    self.azure_endpoint.insert(0, settings["azure"].get("endpoint", ""))
-                    
-                    self.azure_deployment.delete(0, tk.END)
-                    self.azure_deployment.insert(0, settings["azure"].get("deployment", ""))
-
-                if "deepseek" in settings:
-                    self.deepseek_key.delete(0, tk.END)
-                    self.deepseek_key.insert(0, settings["deepseek"].get("api_key", ""))
-                    
-                    self.deepseek_model.delete(0, tk.END)
-                    self.deepseek_model.insert(0, settings["deepseek"].get("model", "deepseek-chat"))
-                    
-                    self.deepseek_url.delete(0, tk.END)
-                    self.deepseek_url.insert(0, settings["deepseek"].get("base_url", "https://api.deepseek.com/v1"))
-                
-                if "local" in settings:
-                    self.local_api.delete(0, tk.END)
-                    self.local_api.insert(0, settings["local"].get("api", "http://localhost:8000/v1"))
-        except Exception as e:
-            print(f"加载设置时出错: {e}")
+        """从API管理器加载设置"""
+        settings = self.api_manager.settings
+        
+        # OpenAI设置
+        if "openai" in settings:
+            self.openai_key.delete(0, tk.END)
+            self.openai_key.insert(0, settings["openai"].get("api_key", ""))
+            if settings["openai"].get("model"):
+                self.openai_model.set(settings["openai"]["model"])
+        
+        # Azure设置
+        if "azure" in settings:
+            self.azure_key.delete(0, tk.END)
+            self.azure_key.insert(0, settings["azure"].get("api_key", ""))
+            
+            self.azure_endpoint.delete(0, tk.END)
+            self.azure_endpoint.insert(0, settings["azure"].get("endpoint", ""))
+            
+            self.azure_deployment.delete(0, tk.END)
+            self.azure_deployment.insert(0, settings["azure"].get("deployment", ""))
+        
+        # DeepSeek设置
+        if "deepseek" in settings:
+            self.deepseek_key.delete(0, tk.END)
+            self.deepseek_key.insert(0, settings["deepseek"].get("api_key", ""))
+            
+            self.deepseek_url.delete(0, tk.END)
+            self.deepseek_url.insert(0, settings["deepseek"].get("base_url", "https://api.deepseek.com/v1"))
+            
+            if settings["deepseek"].get("model"):
+                self.deepseek_model.set(settings["deepseek"]["model"])
+        
+        # 本地API设置
+        if "local" in settings:
+            self.local_api.delete(0, tk.END)
+            self.local_api.insert(0, settings["local"].get("api", "http://localhost:8000/v1"))
+        
+        # 通用参数设置
+        if "general" in settings:
+            # 上下文窗口大小
+            self.max_context.delete(0, tk.END)
+            self.max_context.insert(0, str(settings["general"].get("max_context", 10)))
+            
+            # 流式输出
+            self.stream_output_var.set(settings["general"].get("stream_output", True))
+            
+            # 温度
+            temp_value = settings["general"].get("temperature", 0.7)
+            self.temperature.set(temp_value)
+            self.update_temperature_display(temp_value)
+            
+            # 最大生成Token
+            self.max_tokens.delete(0, tk.END)
+            self.max_tokens.insert(0, str(settings["general"].get("max_tokens", 2000)))
 
     def open_url(self, event):
         """打开链接URL"""
@@ -2619,6 +2754,27 @@ class AIAssistant:
         logging.error(f"URL: {url}")
         
         return full_message, error_title, permission_issue
+
+    def update_temperature_display(self, value):
+        """更新温度显示值"""
+        # 保留两位小数
+        formatted_value = f"{value:.2f}"
+        self.temperature_value.set(formatted_value)
+
+    def test_parameters(self):
+        """测试当前参数设置的效果"""
+        # 先保存当前设置
+        self.save_settings()
+        
+        # 切换到聊天选项卡
+        self.tab_control.select(self.chat_tab)
+        
+        # 自动填充一条测试消息
+        self.user_input.delete("1.0", tk.END)
+        self.user_input.insert("1.0", "请简要介绍一下你自己，并分析当前设置的参数效果。")
+        
+        # 发送消息
+        self.send_message()
 
 def set_console_encoding():
     """设置控制台编码，确保正确显示中文"""

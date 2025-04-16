@@ -202,37 +202,71 @@ def call_api(message, settings, history=None):
             return f"调用本地API时出错: {str(e)}"
     
     def call_deepseek_api(self, message, history=None):
-        """调用DeepSeek API"""
+        """璋冪敤DeepSeek API"""
         if not self.settings["deepseek"]["api_key"]:
-            return "错误: 未设置DeepSeek API密钥，请在设置中配置"
-        
+            return "閿欒: 鏈缃瓺eepSeek API瀵嗛挜锛岃鍦ㄨ缃腑閰嶇疆"
+
         if history is None:
             history = []
-        
+
         try:
             import openai
+            print(f"浣跨敤OpenAI搴撶増鏈? {openai.__version__}")
+            print(f"DeepSeek API閰嶇疆: URL={self.settings['deepseek']['base_url']}, 妯″瀷={self.settings['deepseek']['model']}")
+
+            # 使用OpenAI客户端连接DeepSeek API
             client = openai.OpenAI(
                 api_key=self.settings["deepseek"]["api_key"],
                 base_url=self.settings["deepseek"]["base_url"]
             )
-            
+
+            # 构建对话历史
             messages = []
             for h in history:
                 if "user" in h:
                     messages.append({"role": "user", "content": h["user"]})
                 if "assistant" in h:
                     messages.append({"role": "assistant", "content": h["assistant"]})
-            
+
+            # 添加当前消息
             messages.append({"role": "user", "content": message})
-            
-            response = client.chat.completions.create(
-                model=self.settings["deepseek"]["model"],
-                messages=messages,
-                temperature=0.7,
-            )
-            
-            return response.choices[0].message.content
+
+            try:
+                # 调用DeepSeek API
+                response = client.chat.completions.create(
+                    model=self.settings["deepseek"]["model"],
+                    messages=messages,
+                    temperature=0.7,
+                )
+                return response.choices[0].message.content
+            except Exception as api_error:
+                print(f"调用DeepSeek API出错: {str(api_error)}")
+                
+                # 尝试使用示例API作为备用方案
+                if "绀轰緥API" in self.other_apis:
+                    print("使用示例API插件作为替代...")
+                    api_function = self.other_apis["绀轰緥API"]
+                    return api_function(message, self.settings.get("other", {}), history)
+                else:
+                    return f"""
+DeepSeek API调用失败: {str(api_error)}
+
+可能的原因包括:
+1. API密钥不正确或已过期
+2. 网络连接问题
+3. API服务不可用
+
+建议:
+1. 检查API密钥是否正确
+2. 检查网络连接
+3. 尝试使用其他API服务
+"""
+
         except Exception as e:
+            import traceback
+            error_trace = traceback.format_exc()
+            print(f"DeepSeek API调用错误: {str(e)}")
+            print(f"错误详情: {error_trace}")
             return f"调用DeepSeek API时出错: {str(e)}"
     
     def call_other_api(self, api_name, message, history=None):
@@ -248,22 +282,27 @@ def call_api(message, settings, history=None):
     
     def call_api(self, api_type, message, history=None):
         """根据选择的API类型调用不同的API"""
-        if api_type == "OpenAI":
+        api_type = api_type.lower() if api_type else ""
+        
+        if api_type == "openai":
             return self.call_openai_api(message, history)
-        elif api_type == "Azure OpenAI":
+        elif api_type == "azure":
             return self.call_azure_openai_api(message, history)
-        elif api_type == "本地模型":
+        elif api_type == "local":
             return self.call_local_api(message, history)
-        elif api_type == "DeepSeek":
+        elif api_type == "deepseek":
             return self.call_deepseek_api(message, history)
-        elif api_type in self.other_apis:
-            return self.call_other_api(api_type, message, history)
+        elif api_type in [k.lower() for k in self.other_apis.keys()]:
+            # 查找匹配的API名称（不区分大小写）
+            for k in self.other_apis.keys():
+                if k.lower() == api_type:
+                    return self.call_other_api(k, message, history)
         else:
-            return "未支持的API类型"
+            return f"错误: 未知的API类型: {api_type}"
     
     def get_available_apis(self):
         """获取所有可用的API列表"""
-        apis = ["OpenAI", "Azure OpenAI", "本地模型", "DeepSeek"]
+        apis = ["OpenAI", "Azure", "Local", "DeepSeek"]
         apis.extend(list(self.other_apis.keys()))
         return apis
     

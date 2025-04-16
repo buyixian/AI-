@@ -142,6 +142,7 @@ class AIAssistant:
         
         # 存储聊天历史
         self.chat_history = []
+        self.chat_history_data = []  # 添加这一行，初始化聊天历史数据
         
         # 初始化组件
         self.setup_chat_tab()
@@ -190,7 +191,11 @@ class AIAssistant:
         self.api_dropdown = ttk.Combobox(api_frame, textvariable=self.api_var, values=self.api_choices, state="readonly")
         self.api_dropdown.pack(side=tk.LEFT, padx=5)
         if self.api_choices:
-            self.api_dropdown.current(0)
+            # 默认选择示例API，如果存在
+            if "示例API" in self.api_choices:
+                self.api_var.set("示例API")
+            else:
+                self.api_dropdown.current(0)
         
         # 添加使用知识库选项
         self.use_knowledge_var = tk.BooleanVar()

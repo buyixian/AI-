@@ -14,7 +14,13 @@
     "deepseek": {
         "api_key": "",
         "model": "deepseek-chat",
-        "base_url": "https://api.deepseek.com/v1"
+        "base_url": ""
     },
-    "other": {}
+    "other": {},
+    "general": {
+        "max_context": 0,
+        "stream_output": false,
+        "temperature": 0.9032258064516129,
+        "max_tokens": 8192
+    }
 }
